@@ -3,7 +3,9 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login , logout
+from django.contrib.auth.decorators import login_required
 from .models import (Amenities, Fluid , FluidBooking)
+
 import pyrebase
 
 
@@ -31,7 +33,7 @@ auth = firebase.auth()
 database=firebase.database()
 
 
-
+@login_required(login_url="login")
 def home(request):
     amenities_objs = Amenities.objects.all()
     fluid_objs = Fluid.objects.all()
@@ -94,13 +96,14 @@ def register_page(request):
 
     return render(request, "register.html")
 
+@login_required(login_url="login")
 def payment(request):
     # if request.method == 'POST':
     #     FluidBooking.objects.create(fluid="Chai", user=request.user)
     #     messages.success(request, 'Payment Done')
         return redirect('/change_db/')
 
-
+@login_required(login_url="login")
 def change_db(request):
     name = database.child('test').child('int').get().val()
     num = database.child('test').child('bool').get().val()
@@ -125,6 +128,7 @@ def change_db(request):
     # })
     return redirect('orders')
 
+@login_required(login_url="login")
 def orders(request):
 
     user = request.user
